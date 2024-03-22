@@ -1,20 +1,47 @@
-import React from 'react';
-import { useFormik } from 'formik';
+import { Formik, Field, Form, ErrorMessage, useField } from 'formik';
 import * as Yup from 'yup';
 
+const MyTextInput = ({ label, ...props }) => {
+    const [field, meta] = useField(props);
+    return (
+      <>
+        <label htmlFor={props.name}>{label}</label>
+        <input {...field} {...props} />
+        {meta.touched && meta.error ? (
+          <div className="error">{meta.error}</div>
+        ) : null}
+      </>
+    );
+};
 
+const MyCheckbox = ({ children, ...props }) => {
+    const [field, meta] = useField({ ...props, type: 'checkbox' });
+    return (
+      <>
+        <label className="checkbox">
+            <input type="checkbox" {...field} {...props} />
+            {children}
+        </label>
+        {meta.touched && meta.error ? (
+          <div className="error">{meta.error}</div>
+        ) : null}
+      </>
+    );
+  };
 
-const Form = () => {
-    const formik = useFormik({
-        initialValues: {
+const CustomForm = () => {
+
+    return (
+        <Formik
+        initialValues = {{
             name: '',
             email: '',
             amount: 0,
             currency: '',
             text: '',
             terms: false
-        },
-        validationSchema: Yup.object({
+        }}
+        validationSchema = {Yup.object({
             name: Yup.string()
                     .min(2, 'Минимум 2 символа для заполнения')
                     .required('Обязательное поле!'),
@@ -30,83 +57,59 @@ const Form = () => {
             terms: Yup.boolean()
                     .required('Необходимо согласие')
                     .oneOf([true], "Необходимо согласие")
-        }),
-        onSubmit: values => console.log(JSON.stringify(values, null, 2))
-    });
-
-    return (
-        <form className="form" onSubmit={formik.handleSubmit}>
-            <h2>Отправить пожертвование</h2>
-            <label htmlFor="name">Ваше имя</label>
-            <input
-                id="name"
-                name="name"
-                type="text"
-                onChange={formik.handleChange}
-                value={formik.values.name}
-                onBlur={formik.handleBlur}
-            />
-            {formik.errors.name && formik.touched.name ? <div>{formik.errors.name}</div>: null}
-
-            <label htmlFor="email">Ваша почта</label>
-            <input
-                id="email"
-                name="email"
-                type="email"
-                onChange={formik.handleChange}
-                value={formik.values.email}
-                onBlur={formik.handleBlur}
-            />
-            {formik.errors.email && formik.touched.email ? <div>{formik.errors.email}</div>: null}
-            <label htmlFor="amount">Количество</label>
-            <input
-                id="amount"
-                name="amount"
-                type="number"
-                onChange={formik.handleChange}
-                value={formik.values.amount}
-                onBlur={formik.handleBlur}
-            />
-            {formik.errors.amount && formik.touched.amount ? <div>{formik.errors.amount}</div>: null}
-            
-            
-            <label htmlFor="currency">Валюта</label>
-            <select
-                id="currency"
-                name="currency"
-                onChange={formik.handleChange}
-                value={formik.values.currency}
-                onBlur={formik.handleBlur}
-            >
-                <option value="">Выберите валюту</option>
-                <option value="USD">USD</option>
-                <option value="UAH">UAH</option>
-                <option value="RUB">RUB</option>
-            </select>
-            {formik.errors.currency && formik.touched.currency ? <div>{formik.errors.currency}</div>: null}
-            <label htmlFor="text">Ваше сообщение</label>
-            <textarea 
-                id="text"
-                name="text"
-                onChange={formik.handleChange}
-                value={formik.values.text}
-                onBlur={formik.handleBlur}
-            />
-            {formik.errors.text && formik.touched.text ? <div>{formik.errors.text}</div>: null}
-            <label className="checkbox">
-                <input 
-                    name="terms" 
-                    type="checkbox" 
-                    onChange={formik.handleChange}
-                    checked={formik.values.terms}
-                    onBlur={formik.handleBlur}
+        })}
+        onSubmit = {values => console.log(JSON.stringify(values, null, 2))}
+        >
+            <Form className="form">
+                <h2>Отправить пожертвование</h2>
+                <MyTextInput
+                    label="Ваше имя"
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="off"
                 />
-                Соглашаетесь с политикой конфиденциальности?
-            </label>
-            {formik.errors.terms && formik.touched.terms ? <div>{formik.errors.terms}</div>: null}
-            <button type="submit">Отправить</button>
-        </form>
-    );
+                <MyTextInput
+                    label="Ваша почта"
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="off"
+                />
+                <label htmlFor="amount">Количество</label>
+                <Field
+                    id="amount"
+                    name="amount"
+                    type="number"
+                    autoComplete="off"
+                />
+                <ErrorMessage component="div" className="error" name="amount"/>
+                <label htmlFor="currency">Валюта</label>
+                <Field
+                    id="currency"
+                    name="currency"
+                    as="select"
+                    >
+                        <option value="">Выберите валюту</option>
+                        <option value="USD">USD</option>
+                        <option value="UAH">UAH</option>
+                        <option value="RUB">RUB</option>
+                </Field>
+                <ErrorMessage component="div" className="error" name="currency"/>
+                <label htmlFor="text">Ваше сообщение</label>
+                <Field 
+                    id="text"
+                    name="text"
+                    as="textarea"
+                />
+                <ErrorMessage component="div" className="error" name="text"/>
+                <MyCheckbox name="terms">
+                    Соглашаетесь с политикой конфиденциальности?
+                </MyCheckbox>
+                <button type="submit">Отправить</button>
+            </Form>
+        </Formik>
+    )
 }
 
-export default Form;
+export default CustomForm;
