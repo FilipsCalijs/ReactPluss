@@ -1,6 +1,6 @@
 # Advanced React
 
-
+only for daily activity once!
 ## Overview
 This directory, `advanced`, marks the third stage of my journey in learning React. In this phase, my focus will be on delving into advanced React concepts such as hooks, useEffects, useState, and more. I plan to enhance my understanding and proficiency in utilizing these concepts to build more sophisticated and efficient React applications.
 
